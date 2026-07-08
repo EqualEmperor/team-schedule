@@ -7,7 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
-        .grid-cols-custom { grid-template-columns: 160px 140px repeat(5, minmax(100px, 1fr)) 120px repeat(3, minmax(80px, 1fr)); }
+        /* Grid setup for Date, Event, 5 Players, 1 Coach, 1 Sub */
+        .grid-cols-custom { grid-template-columns: 160px 180px repeat(5, minmax(100px, 1fr)) 120px minmax(100px, 1fr); }
         .status-available { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .status-unavailable { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         .status-unsure { background-color: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
@@ -15,7 +16,7 @@
         .status-none { background-color: rgba(255, 255, 255, 0.02); color: #444c56; border: 1px solid rgba(255, 255, 255, 0.05); }
     </style>
 </head>
-<body class="p-4">
+<body class="p-4 select-none">
 
     <!-- Top Navigation Bar -->
     <header class="w-full bg-[#161b22] border border-[#30363d] rounded p-3 flex justify-between items-center mb-4 shadow-lg">
@@ -26,7 +27,7 @@
                 <span class="bg-gray-700 text-white font-semibold px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide">Editor</span>
             </div>
             <div class="text-gray-400">Today: 2026-07-08</div>
-            <button class="bg-[#21262d] hover:bg-[#30363d] text-white font-semibold px-3 py-1.5 border border-[#30363d] rounded transition">COPY</button>
+            <button onclick="localStorage.clear(); location.reload();" class="bg-[#ef4444]/10 hover:bg-[#ef4444]/20 text-[#ef4444] font-semibold px-3 py-1.5 border border-[#ef4444]/30 rounded transition">RESET ALL</button>
             <button class="bg-[#21262d] hover:bg-[#30363d] text-white font-semibold px-3 py-1.5 border border-[#30363d] rounded transition">HOME</button>
         </div>
     </header>
@@ -36,112 +37,192 @@
         
         <!-- Master Header Grid Matrix -->
         <div class="grid grid-cols-custom border-b border-[#30363d] bg-[#1f242c] text-gray-400 font-bold">
-            <div class="p-2 border-r border-[#30363d] flex flex-col justify-center items-center text-gray-300">
+            <div class="p-3 border-r border-[#30363d] flex flex-col justify-center items-center text-gray-300">
                 <span class="text-[9px] text-gray-500 font-normal normal-case mb-1">TIMES ARE IN: CEST</span>
                 <span>Date</span>
             </div>
-            <div class="p-2 border-r border-[#30363d] flex items-center justify-center">Event</div>
-            <div class="col-span-5 border-r border-[#30363d] flex flex-col">
-                <div class="p-1 border-b border-[#30363d] text-[10px]">Players</div>
-                <div class="grid grid-cols-5 h-full items-center">
-                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">FRAG/LURK</span><span class="text-gray-300">PIXEL</span></div>
-                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">FRAG/IGL</span><span class="text-gray-300">REKON</span></div>
-                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">FLEX</span><span class="text-gray-300">SCRIM TEST</span></div>
-                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">SUP/SHIELDS</span><span class="text-gray-300">BRIAN</span></div>
-                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">SUPPORT</span><span class="text-gray-300">KAYUU</span></div>
-                </div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center">Event</div>
+            
+            <!-- Core Players Row (Roles Removed) -->
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Zeniq</div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Skitz</div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Kapa</div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Frag</div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Neo</div>
+            
+            <!-- Coach & Sub Updated -->
+            <div class="p-3 border-r border-[#30363d] flex flex-col justify-center">
+                <span class="text-[9px] text-gray-500 font-normal">Coach</span>
+                <span class="text-gray-300">Kayuu</span>
             </div>
-            <div class="border-r border-[#30363d] flex flex-col">
-                <div class="p-1 border-b border-[#30363d] text-[10px]">Coach</div>
-                <div class="p-1 flex items-center justify-center h-full text-gray-300">REKON</div>
-            </div>
-            <div class="col-span-3 flex flex-col">
-                <div class="p-1 border-b border-[#30363d] text-[10px]">Substitutes</div>
-                <div class="grid grid-cols-3 h-full items-center text-gray-500 font-normal">
-                    <div class="p-1 border-r border-[#30363d] last:border-0">-</div>
-                    <div class="p-1 border-r border-[#30363d] last:border-0">-</div>
-                    <div class="p-1 border-r border-[#30363d] last:border-0">-</div>
-                </div>
+            <div class="p-3 flex flex-col justify-center">
+                <span class="text-[9px] text-gray-500 font-normal">Substitute</span>
+                <span class="text-gray-300">Sladak</span>
             </div>
         </div>
 
-        <!-- Block Segment: 6th - 12th of July -->
-        <div class="bg-[#0d1117] text-left p-2 px-4 border-b border-[#30363d] text-gray-500 font-bold text-[10px]">6th - 12th of July</div>
-        
-        <!-- Row: Wednesday 8th of July (Active Day Highlight) -->
-        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
-            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start gap-2 bg-[#1c212a] text-white pl-4 font-semibold">
-                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                <span class="text-gray-400 font-normal lowercase text-[10px]">wednesday</span> 8th of July
-            </div>
-            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-center"></div>
-            <!-- Player Status Cells -->
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <!-- Coach & Sub Cells -->
-            <div class="p-2 border-r border-[#30363d]/30 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-        </div>
-
-        <!-- Row: Saturday 11th of July -->
-        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
-            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start text-gray-400 pl-4">
-                <span class="text-gray-500 font-normal lowercase text-[10px] mr-1">saturday</span> 11th of July
-            </div>
-            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-center"></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-unavailable">Unavailable</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-unavailable">Unavailable</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-2 border-r border-[#30363d]/30 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-        </div>
-
-        <!-- Row: Sunday 12th of July (Specific Times) -->
-        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
-            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start text-gray-400 pl-4">
-                <span class="text-gray-500 font-normal lowercase text-[10px] mr-1">sunday</span> 12th of July
-            </div>
-            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-center"></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-unsure">Unsure</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-unsure">Unsure</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-specific">17:00-END</div></div>
-            <div class="p-2 border-r border-[#30363d]/30 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-        </div>
-
-        <!-- Block Segment: 13th - 19th of July -->
-        <div class="bg-[#0d1117] text-left p-2 px-4 border-b border-[#30363d] text-gray-500 font-bold text-[10px]">13th - 19th of July</div>
-
-        <!-- Empty State Default Row Example -->
-        <div class="grid grid-cols-custom hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
-            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start text-gray-500 pl-4">
-                <span class="text-gray-600 font-normal lowercase text-[10px] mr-1">monday</span> 13th of July
-            </div>
-            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-center"></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
-            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
-            <div class="p-2 border-r border-[#30363d]/30 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
-        </div>
-
+        <!-- Schedule Target Weeks Wrapper -->
+        <div id="schedule-weeks"></div>
     </main>
+
+    <!-- Interactive Status Editing Modal (Matching Image Structure) -->
+    <div id="status-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[380px] p-5 shadow-2xl relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition text-lg">&times;</button>
+            
+            <div id="modal-header-name" class="text-center font-bold text-white text-sm tracking-widest uppercase mb-0.5">PLAYER</div>
+            <div id="modal-header-date" class="text-center text-gray-500 text-[10px] tracking-wider mb-5">2026-07-08</div>
+
+            <div class="flex flex-col gap-2.5 mb-4">
+                <button onclick="selectStatus('Available')" class="w-full py-2.5 rounded font-bold tracking-wider border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition">AVAILABLE</button>
+                <button onclick="selectStatus('Unavailable')" class="w-full py-2.5 rounded font-bold tracking-wider border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition">UNAVAILABLE</button>
+                <button onclick="selectStatus('Unsure')" class="w-full py-2.5 rounded font-bold tracking-wider border border-purple-500/30 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition">UNSURE</button>
+                <button onclick="toggleTimeInputs()" class="w-full py-2.5 rounded font-bold tracking-wider border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition">FROM</button>
+            </div>
+
+            <!-- Time Input Options Block -->
+            <div id="time-picker-block" class="hidden bg-[#0d1117] border border-[#30363d] rounded-lg p-3 mb-4">
+                <div class="flex items-center justify-center gap-2 text-xs text-gray-400">
+                    <span>FROM:</span>
+                    <input type="text" id="time-from" value="17" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500">
+                    <span>:</span>
+                    <input type="text" id="time-mins" value="00" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500">
+                    <span class="ml-2">TO:</span>
+                    <div class="bg-[#161b22] border border-[#30363d] px-2 py-1 rounded flex items-center gap-1 font-bold text-white">
+                        <span>END</span>
+                        <span class="text-gray-500 cursor-pointer hover:text-white">&times;</span>
+                    </div>
+                </div>
+                <button onclick="saveSpecificTime()" class="w-full mt-3 py-2 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold rounded text-xs hover:bg-emerald-600/30 transition">SAVE</button>
+            </div>
+
+            <button onclick="selectStatus('-')" class="w-full py-2 bg-[#21262d] text-gray-400 font-bold border border-[#30363d] rounded hover:text-white transition text-[10px]">CLEAR</button>
+        </div>
+    </div>
+
+    <!-- Interactive Event Editing Modal -->
+    <div id="event-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[340px] p-5 shadow-2xl">
+            <div class="text-white font-bold text-xs uppercase mb-3 tracking-wider">Edit Day Event / Tournament</div>
+            <input type="text" id="event-input" placeholder="e.g., T4 Tournament (19:00)" class="w-full bg-[#0d1117] border border-[#30363d] p-2.5 rounded text-white text-xs mb-4 focus:outline-none focus:border-blue-500">
+            <div class="flex gap-2">
+                <button onclick="saveEvent()" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded text-xs transition">SAVE EVENT</button>
+                <button onclick="closeEventModal()" class="px-4 py-2 bg-[#21262d] text-gray-400 border border-[#30363d] rounded text-xs hover:text-white transition">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Engine Logic Layer -->
+    <script>
+        // Data Configuration Setup
+        const members = ['Zeniq', 'Skitz', 'Kapa', 'Frag', 'Neo', 'Kayuu', 'Sladak'];
+        const scheduleStructure = [
+            { name: "6th - 12th of July", days: ["Monday 6th of July", "Tuesday 7th of July", "Wednesday 8th of July", "Thursday 9th of July", "Friday 10th of July", "Saturday 11th of July", "Sunday 12th of July"] },
+            { name: "13th - 19th of July", days: ["Monday 13th of July", "Tuesday 14th of July", "Wednesday 15th of July", "Thursday 16th of July", "Friday 17th of July", "Saturday 18th of July", "Sunday 19th of July"] },
+            { name: "20th - 26th of July", days: ["Monday 20th of July", "Tuesday 21st of July", "Wednesday 22nd of July", "Thursday 23rd of July", "Friday 24th of July", "Saturday 25th of July", "Sunday 26th of July"] }
+        ];
+
+        let activeTargetCell = null;
+        let activeTargetEvent = null;
+
+        // Render Data Grid Layout from Memory or Defaults
+        function renderSchedule() {
+            const container = document.getElementById('schedule-weeks');
+            container.innerHTML = '';
+
+            scheduleStructure.forEach(week => {
+                let weekHTML = `<div class="bg-[#0d1117] text-left p-2 px-4 border-b border-[#30363d] text-gray-500 font-bold text-[10px]">${week.name}</div>`;
+                
+                week.days.forEach(day => {
+                    const eventKey = `event-${day}`;
+                    const savedEvent = localStorage.getItem(eventKey) || '';
+                    const isToday = day.includes("8th of July"); // Pulse tracker matching image state
+
+                    weekHTML += `
+                        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
+                            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start gap-2 ${isToday ? 'bg-[#1c212a] text-white font-semibold' : 'text-gray-400'} pl-4">
+                                ${isToday ? '<span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>' : ''}
+                                ${day}
+                            </div>
+                            <div onclick="openEventModal('${day}')" class="p-2 border-r border-[#30363d]/50 flex items-center justify-center text-blue-400 font-semibold cursor-pointer hover:bg-blue-500/5 transition truncate" title="Click to edit event">${savedEvent}</div>
+                    `;
+
+                    members.forEach(member => {
+                        const cellKey = `${day}-${member}`;
+                        const status = localStorage.getItem(cellKey) || '-';
+                        let classStyle = 'status-none';
+
+                        if (status === 'Available') classStyle = 'status-available';
+                        else if (status === 'Unavailable') classStyle = 'status-unavailable';
+                        else if (status === 'Unsure') classStyle = 'status-unsure';
+                        else if (status !== '-') classStyle = 'status-specific';
+
+                        weekHTML += `
+                            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center">
+                                <div onclick="openModal('${member}', '${day}')" class="w-full h-full flex items-center justify-center rounded cursor-pointer transition transform active:scale-95 ${classStyle}">
+                                    ${status}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    weekHTML += `</div>`;
+                });
+                container.innerHTML += weekHTML;
+            });
+        }
+
+        // Modal Action Configurations
+        function openModal(member, day) {
+            activeTargetCell = `${day}-${member}`;
+            document.getElementById('modal-header-name').innerText = member;
+            document.getElementById('modal-header-date').innerText = day;
+            document.getElementById('time-picker-block').classList.add('hidden');
+            document.getElementById('status-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('status-modal').classList.add('hidden');
+        }
+
+        function selectStatus(status) {
+            localStorage.setItem(activeTargetCell, status);
+            closeModal();
+            renderSchedule();
+        }
+
+        function toggleTimeInputs() {
+            document.getElementById('time-picker-block').classList.toggle('hidden');
+        }
+
+        function saveSpecificTime() {
+            const from = document.getElementById('time-from').value;
+            const mins = document.getElementById('time-mins').value;
+            localStorage.setItem(activeTargetCell, `${from}:${mins}-END`);
+            closeModal();
+            renderSchedule();
+        }
+
+        function openEventModal(day) {
+            activeTargetEvent = `event-${day}`;
+            document.getElementById('event-input').value = localStorage.getItem(activeTargetEvent) || '';
+            document.getElementById('event-modal').classList.remove('hidden');
+        }
+
+        function closeEventModal() {
+            document.getElementById('event-modal').classList.add('hidden');
+        }
+
+        function saveEvent() {
+            const val = document.getElementById('event-input').value;
+            if (val.trim() === '') localStorage.removeItem(activeTargetEvent);
+            else localStorage.setItem(activeTargetEvent, val);
+            closeEventModal();
+            renderSchedule();
+        }
+
+        // Initialize Runtime Engine
+        renderSchedule();
+    </script>
 </body>
 </html>
