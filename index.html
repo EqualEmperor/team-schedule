@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esports Team Schedule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
+        .grid-cols-custom { grid-template-columns: 160px 140px repeat(5, minmax(100px, 1fr)) 120px repeat(3, minmax(80px, 1fr)); }
+        .status-available { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-unavailable { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .status-unsure { background-color: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .status-specific { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .status-none { background-color: rgba(255, 255, 255, 0.02); color: #444c56; border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- Top Navigation Bar -->
+    <header class="w-full bg-[#161b22] border border-[#30363d] rounded p-3 flex justify-between items-center mb-4 shadow-lg">
+        <div class="text-white font-bold tracking-wider text-sm uppercase">Schedule</div>
+        <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-2 bg-[#0d1117] border border-[#30363d] px-3 py-1.5 rounded">
+                <span class="text-gray-400">kayuu</span>
+                <span class="bg-gray-700 text-white font-semibold px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide">Editor</span>
+            </div>
+            <div class="text-gray-400">Today: 2026-07-08</div>
+            <button class="bg-[#21262d] hover:bg-[#30363d] text-white font-semibold px-3 py-1.5 border border-[#30363d] rounded transition">COPY</button>
+            <button class="bg-[#21262d] hover:bg-[#30363d] text-white font-semibold px-3 py-1.5 border border-[#30363d] rounded transition">HOME</button>
+        </div>
+    </header>
+
+    <!-- Main Schedule Container -->
+    <main class="w-full bg-[#161b22] border border-[#30363d] rounded overflow-hidden shadow-xl text-[11px] font-medium uppercase tracking-wider text-center">
+        
+        <!-- Master Header Grid Matrix -->
+        <div class="grid grid-cols-custom border-b border-[#30363d] bg-[#1f242c] text-gray-400 font-bold">
+            <div class="p-2 border-r border-[#30363d] flex flex-col justify-center items-center text-gray-300">
+                <span class="text-[9px] text-gray-500 font-normal normal-case mb-1">TIMES ARE IN: CEST</span>
+                <span>Date</span>
+            </div>
+            <div class="p-2 border-r border-[#30363d] flex items-center justify-center">Event</div>
+            <div class="col-span-5 border-r border-[#30363d] flex flex-col">
+                <div class="p-1 border-b border-[#30363d] text-[10px]">Players</div>
+                <div class="grid grid-cols-5 h-full items-center">
+                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">FRAG/LURK</span><span class="text-gray-300">PIXEL</span></div>
+                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">FRAG/IGL</span><span class="text-gray-300">REKON</span></div>
+                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">FLEX</span><span class="text-gray-300">SCRIM TEST</span></div>
+                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">SUP/SHIELDS</span><span class="text-gray-300">BRIAN</span></div>
+                    <div class="p-1 border-r border-[#30363d] last:border-0 flex flex-col"><span class="text-[9px] text-gray-500 font-normal">SUPPORT</span><span class="text-gray-300">KAYUU</span></div>
+                </div>
+            </div>
+            <div class="border-r border-[#30363d] flex flex-col">
+                <div class="p-1 border-b border-[#30363d] text-[10px]">Coach</div>
+                <div class="p-1 flex items-center justify-center h-full text-gray-300">REKON</div>
+            </div>
+            <div class="col-span-3 flex flex-col">
+                <div class="p-1 border-b border-[#30363d] text-[10px]">Substitutes</div>
+                <div class="grid grid-cols-3 h-full items-center text-gray-500 font-normal">
+                    <div class="p-1 border-r border-[#30363d] last:border-0">-</div>
+                    <div class="p-1 border-r border-[#30363d] last:border-0">-</div>
+                    <div class="p-1 border-r border-[#30363d] last:border-0">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Block Segment: 6th - 12th of July -->
+        <div class="bg-[#0d1117] text-left p-2 px-4 border-b border-[#30363d] text-gray-500 font-bold text-[10px]">6th - 12th of July</div>
+        
+        <!-- Row: Wednesday 8th of July (Active Day Highlight) -->
+        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
+            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start gap-2 bg-[#1c212a] text-white pl-4 font-semibold">
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                <span class="text-gray-400 font-normal lowercase text-[10px]">wednesday</span> 8th of July
+            </div>
+            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-center"></div>
+            <!-- Player Status Cells -->
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <!-- Coach & Sub Cells -->
+            <div class="p-2 border-r border-[#30363d]/30 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+        </div>
+
+        <!-- Row: Saturday 11th of July -->
+        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
+            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start text-gray-400 pl-4">
+                <span class="text-gray-500 font-normal lowercase text-[10px] mr-1">saturday</span> 11th of July
+            </div>
+            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-center"></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-unavailable">Unavailable</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-unavailable">Unavailable</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-2 border-r border-[#30363d]/30 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+        </div>
+
+        <!-- Row: Sunday 12th of July (Specific Times) -->
+        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
+            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start text-gray-400 pl-4">
+                <span class="text-gray-500 font-normal lowercase text-[10px] mr-1">sunday</span> 12th of July
+            </div>
+            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-center"></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-unsure">Unsure</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-available">Available</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-unsure">Unsure</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-specific">17:00-END</div></div>
+            <div class="p-2 border-r border-[#30363d]/30 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+        </div>
+
+        <!-- Block Segment: 13th - 19th of July -->
+        <div class="bg-[#0d1117] text-left p-2 px-4 border-b border-[#30363d] text-gray-500 font-bold text-[10px]">13th - 19th of July</div>
+
+        <!-- Empty State Default Row Example -->
+        <div class="grid grid-cols-custom hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
+            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start text-gray-500 pl-4">
+                <span class="text-gray-600 font-normal lowercase text-[10px] mr-1">monday</span> 13th of July
+            </div>
+            <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-center"></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
+            <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center"><div class="w-full h-full flex items-center justify-center rounded status-none">-</div></div>
+            <div class="p-2 border-r border-[#30363d]/30 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+            <div class="p-2 border-r border-[#30363d]/30 last:border-0 flex items-center justify-center text-gray-600">-</div>
+        </div>
+
+    </main>
+</body>
+</html>
