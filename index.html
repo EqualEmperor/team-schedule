@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
-        /* Grid setup for Date, Event, 5 Players, 1 Coach, 1 Sub */
         .grid-cols-custom { grid-template-columns: 160px 180px repeat(5, minmax(100px, 1fr)) 120px minmax(100px, 1fr); }
         .status-available { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .status-unavailable { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
@@ -34,8 +33,6 @@
 
     <!-- Main Schedule Container -->
     <main class="w-full bg-[#161b22] border border-[#30363d] rounded overflow-hidden shadow-xl text-[11px] font-medium uppercase tracking-wider text-center">
-        
-        <!-- Master Header Grid Matrix -->
         <div class="grid grid-cols-custom border-b border-[#30363d] bg-[#1f242c] text-gray-400 font-bold">
             <div class="p-3 border-r border-[#30363d] flex flex-col justify-center items-center text-gray-300">
                 <span class="text-[9px] text-gray-500 font-normal normal-case mb-1">TIMES ARE IN: CEST</span>
@@ -43,14 +40,12 @@
             </div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center">Event</div>
             
-            <!-- Core Players Row (Roles Removed) -->
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Zeniq</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Skitz</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Kapa</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Frag</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Neo</div>
             
-            <!-- Coach & Sub Updated -->
             <div class="p-3 border-r border-[#30363d] flex flex-col justify-center">
                 <span class="text-[9px] text-gray-500 font-normal">Coach</span>
                 <span class="text-gray-300">Kayuu</span>
@@ -60,12 +55,10 @@
                 <span class="text-gray-300">Sladak</span>
             </div>
         </div>
-
-        <!-- Schedule Target Weeks Wrapper -->
         <div id="schedule-weeks"></div>
     </main>
 
-    <!-- Interactive Status Editing Modal (Matching Image Structure) -->
+    <!-- Status Picker Modal Layer -->
     <div id="status-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
         <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[380px] p-5 shadow-2xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition text-lg">&times;</button>
@@ -77,30 +70,43 @@
                 <button onclick="selectStatus('Available')" class="w-full py-2.5 rounded font-bold tracking-wider border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition">AVAILABLE</button>
                 <button onclick="selectStatus('Unavailable')" class="w-full py-2.5 rounded font-bold tracking-wider border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition">UNAVAILABLE</button>
                 <button onclick="selectStatus('Unsure')" class="w-full py-2.5 rounded font-bold tracking-wider border border-purple-500/30 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition">UNSURE</button>
-                <button onclick="toggleTimeInputs()" class="w-full py-2.5 rounded font-bold tracking-wider border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition">FROM</button>
+                <button onclick="toggleTimeInputs()" class="w-full py-2.5 rounded font-bold tracking-wider border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition">FROM / TIMEFRAME</button>
             </div>
 
-            <!-- Time Input Options Block -->
+            <!-- Enhanced Precision Dual Time Inputs Picker -->
             <div id="time-picker-block" class="hidden bg-[#0d1117] border border-[#30363d] rounded-lg p-3 mb-4">
-                <div class="flex items-center justify-center gap-2 text-xs text-gray-400">
-                    <span>FROM:</span>
-                    <input type="text" id="time-from" value="17" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500">
-                    <span>:</span>
-                    <input type="text" id="time-mins" value="00" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500">
-                    <span class="ml-2">TO:</span>
-                    <div class="bg-[#161b22] border border-[#30363d] px-2 py-1 rounded flex items-center gap-1 font-bold text-white">
-                        <span>END</span>
-                        <span class="text-gray-500 cursor-pointer hover:text-white">&times;</span>
+                <div class="grid grid-cols-2 gap-4 mb-3 text-[10px] tracking-wide text-gray-400 text-center font-bold">
+                    <div>
+                        <div class="mb-1 uppercase">FROM:</div>
+                        <div class="flex items-center justify-center gap-1">
+                            <input type="text" id="time-from-hh" value="17" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs">
+                            <span>:</span>
+                            <input type="text" id="time-from-mm" value="00" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-1 uppercase">TO:</div>
+                        <div class="flex items-center justify-center gap-1">
+                            <input type="text" id="time-to-hh" value="23" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs">
+                            <span>:</span>
+                            <input type="text" id="time-to-mm" value="00" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs">
+                        </div>
                     </div>
                 </div>
-                <button onclick="saveSpecificTime()" class="w-full mt-3 py-2 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold rounded text-xs hover:bg-emerald-600/30 transition">SAVE</button>
+                <div class="flex items-center justify-center gap-2 mb-3">
+                    <label class="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase cursor-pointer">
+                        <input type="checkbox" id="time-till-end" onchange="toggleEndCheckbox(this)" class="accent-blue-500">
+                        <span>No fixed end (Till End)</span>
+                    </label>
+                </div>
+                <button onclick="saveSpecificTime()" class="w-full py-2 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold rounded text-xs hover:bg-emerald-600/30 transition">SAVE TIMEFRAME</button>
             </div>
 
             <button onclick="selectStatus('-')" class="w-full py-2 bg-[#21262d] text-gray-400 font-bold border border-[#30363d] rounded hover:text-white transition text-[10px]">CLEAR</button>
         </div>
     </div>
 
-    <!-- Interactive Event Editing Modal -->
+    <!-- Event Picker Modal Layer -->
     <div id="event-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
         <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[340px] p-5 shadow-2xl">
             <div class="text-white font-bold text-xs uppercase mb-3 tracking-wider">Edit Day Event / Tournament</div>
@@ -112,9 +118,7 @@
         </div>
     </div>
 
-    <!-- Application Engine Logic Layer -->
     <script>
-        // Data Configuration Setup
         const members = ['Zeniq', 'Skitz', 'Kapa', 'Frag', 'Neo', 'Kayuu', 'Sladak'];
         const scheduleStructure = [
             { name: "6th - 12th of July", days: ["Monday 6th of July", "Tuesday 7th of July", "Wednesday 8th of July", "Thursday 9th of July", "Friday 10th of July", "Saturday 11th of July", "Sunday 12th of July"] },
@@ -125,7 +129,6 @@
         let activeTargetCell = null;
         let activeTargetEvent = null;
 
-        // Render Data Grid Layout from Memory or Defaults
         function renderSchedule() {
             const container = document.getElementById('schedule-weeks');
             container.innerHTML = '';
@@ -136,7 +139,7 @@
                 week.days.forEach(day => {
                     const eventKey = `event-${day}`;
                     const savedEvent = localStorage.getItem(eventKey) || '';
-                    const isToday = day.includes("8th of July"); // Pulse tracker matching image state
+                    const isToday = day.includes("8th of July");
 
                     weekHTML += `
                         <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
@@ -172,12 +175,14 @@
             });
         }
 
-        // Modal Action Configurations
         function openModal(member, day) {
             activeTargetCell = `${day}-${member}`;
             document.getElementById('modal-header-name').innerText = member;
             document.getElementById('modal-header-date').innerText = day;
             document.getElementById('time-picker-block').classList.add('hidden');
+            document.getElementById('time-till-end').checked = false;
+            document.getElementById('time-to-hh').disabled = false;
+            document.getElementById('time-to-mm').disabled = false;
             document.getElementById('status-modal').classList.remove('hidden');
         }
 
@@ -195,10 +200,26 @@
             document.getElementById('time-picker-block').classList.toggle('hidden');
         }
 
+        function toggleEndCheckbox(cb) {
+            document.getElementById('time-to-hh').disabled = cb.checked;
+            document.getElementById('time-to-mm').disabled = cb.checked;
+        }
+
         function saveSpecificTime() {
-            const from = document.getElementById('time-from').value;
-            const mins = document.getElementById('time-mins').value;
-            localStorage.setItem(activeTargetCell, `${from}:${mins}-END`);
+            const fromHH = document.getElementById('time-from-hh').value;
+            const fromMM = document.getElementById('time-from-mm').value;
+            const isTillEnd = document.getElementById('time-till-end').checked;
+            
+            let finalValue = "";
+            if (isTillEnd) {
+                finalValue = `${fromHH}:${fromMM}-END`;
+            } else {
+                const toHH = document.getElementById('time-to-hh').value;
+                const toMM = document.getElementById('time-to-mm').value;
+                finalValue = `${fromHH}:${fromMM}-${toHH}:${toMM}`;
+            }
+
+            localStorage.setItem(activeTargetCell, finalValue);
             closeModal();
             renderSchedule();
         }
@@ -221,7 +242,6 @@
             renderSchedule();
         }
 
-        // Initialize Runtime Engine
         renderSchedule();
     </script>
 </body>
