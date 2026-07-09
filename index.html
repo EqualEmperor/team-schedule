@@ -89,7 +89,7 @@
         const SUPABASE_URL = "https://xwbupodfmgovkrixbetu.supabase.co";
         const SUPABASE_KEY = "sb_publishable_kVhoY5UQyNm5iCxnDBuuBw_IXHuxmnk";
         
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const members = ['Zeniq', 'Skitz', 'Kapa', 'Frag', 'Neo', 'Kayuu', 'Sladak'];
         const scheduleStructure = [
@@ -120,9 +120,9 @@
             }
         }
 
-        // Fetch everything from Supabase Cloud Database
+// Fetch everything from Supabase Cloud Database
         async function syncFromCloud() {
-            const { data, error } = await supabase.from('schedule_data').select('*');
+            const { data, error } = await db.from('schedule_data').select('*');
             if (!error && data) {
                 cloudDataCache = {};
                 data.forEach(row => { cloudDataCache[row.id] = row.value; });
@@ -134,7 +134,7 @@
         async function saveToCloud(id, value) {
             cloudDataCache[id] = value;
             renderSchedule(); // update UI instantly
-            await supabase.from('schedule_data').upsert({ id: id, value: value });
+            await db.from('schedule_data').upsert({ id: id, value: value });
         }
 
         function renderSchedule() {
