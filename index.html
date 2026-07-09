@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Esports Team Schedule</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include the Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
         .grid-cols-custom { grid-template-columns: 160px 180px repeat(5, minmax(100px, 1fr)) 120px minmax(100px, 1fr); }
@@ -17,21 +19,17 @@
 </head>
 <body class="p-4 select-none">
 
-    <!-- Top Navigation Bar -->
     <header class="w-full bg-[#161b22] border border-[#30363d] rounded p-3 flex justify-between items-center mb-4 shadow-lg">
-        <div class="text-white font-bold tracking-wider text-sm uppercase">Schedule</div>
-        <div class="flex items-center gap-4 text-xs">
+        <div class="text-white font-bold tracking-wider text-sm uppercase">Schedule Matrix</div>
+        <div class="flex items-center gap-3 text-xs">
             <div class="flex items-center gap-2 bg-[#0d1117] border border-[#30363d] px-3 py-1.5 rounded">
-                <span class="text-gray-400">kayuu</span>
-                <span class="bg-gray-700 text-white font-semibold px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide">Editor</span>
+                <span id="current-user-display" class="text-gray-400">Loading...</span>
+                <span onclick="changeIdentity()" class="cursor-pointer text-blue-400 hover:underline text-[10px] uppercase ml-1">Change</span>
             </div>
-            <div class="text-gray-400">Today: 2026-07-08</div>
-            <button onclick="localStorage.clear(); location.reload();" class="bg-[#ef4444]/10 hover:bg-[#ef4444]/20 text-[#ef4444] font-semibold px-3 py-1.5 border border-[#ef4444]/30 rounded transition">RESET ALL</button>
-            <button class="bg-[#21262d] hover:bg-[#30363d] text-white font-semibold px-3 py-1.5 border border-[#30363d] rounded transition">HOME</button>
+            <div class="text-gray-400">Today: 2026-07-09</div>
         </div>
     </header>
 
-    <!-- Main Schedule Container -->
     <main class="w-full bg-[#161b22] border border-[#30363d] rounded overflow-hidden shadow-xl text-[11px] font-medium uppercase tracking-wider text-center">
         <div class="grid grid-cols-custom border-b border-[#30363d] bg-[#1f242c] text-gray-400 font-bold">
             <div class="p-3 border-r border-[#30363d] flex flex-col justify-center items-center text-gray-300">
@@ -39,74 +37,42 @@
                 <span>Date</span>
             </div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center">Event</div>
-            
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Zeniq</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Skitz</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Kapa</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Frag</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Neo</div>
-            
-            <div class="p-3 border-r border-[#30363d] flex flex-col justify-center">
-                <span class="text-[9px] text-gray-500 font-normal">Coach</span>
-                <span class="text-gray-300">Kayuu</span>
-            </div>
-            <div class="p-3 flex flex-col justify-center">
-                <span class="text-[9px] text-gray-500 font-normal">Substitute</span>
-                <span class="text-gray-300">Sladak</span>
-            </div>
+            <div class="p-3 border-r border-[#30363d] flex flex-col justify-center"><span class="text-[9px] text-gray-500 font-normal">Coach</span><span class="text-gray-300">Kayuu</span></div>
+            <div class="p-3 flex flex-col justify-center"><span class="text-[9px] text-gray-500 font-normal">Substitute</span><span class="text-gray-300">Sladak</span></div>
         </div>
         <div id="schedule-weeks"></div>
     </main>
 
-    <!-- Status Picker Modal Layer -->
+    <!-- Status Modal -->
     <div id="status-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
         <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[380px] p-5 shadow-2xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition text-lg">&times;</button>
-            
             <div id="modal-header-name" class="text-center font-bold text-white text-sm tracking-widest uppercase mb-0.5">PLAYER</div>
-            <div id="modal-header-date" class="text-center text-gray-500 text-[10px] tracking-wider mb-5">2026-07-08</div>
-
+            <div id="modal-header-date" class="text-center text-gray-500 text-[10px] tracking-wider mb-5">Date</div>
             <div class="flex flex-col gap-2.5 mb-4">
                 <button onclick="selectStatus('Available')" class="w-full py-2.5 rounded font-bold tracking-wider border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition">AVAILABLE</button>
                 <button onclick="selectStatus('Unavailable')" class="w-full py-2.5 rounded font-bold tracking-wider border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition">UNAVAILABLE</button>
                 <button onclick="selectStatus('Unsure')" class="w-full py-2.5 rounded font-bold tracking-wider border border-purple-500/30 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition">UNSURE</button>
                 <button onclick="toggleTimeInputs()" class="w-full py-2.5 rounded font-bold tracking-wider border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition">FROM / TIMEFRAME</button>
             </div>
-
-            <!-- Enhanced Precision Dual Time Inputs Picker -->
             <div id="time-picker-block" class="hidden bg-[#0d1117] border border-[#30363d] rounded-lg p-3 mb-4">
                 <div class="grid grid-cols-2 gap-4 mb-3 text-[10px] tracking-wide text-gray-400 text-center font-bold">
-                    <div>
-                        <div class="mb-1 uppercase">FROM:</div>
-                        <div class="flex items-center justify-center gap-1">
-                            <input type="text" id="time-from-hh" value="17" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs">
-                            <span>:</span>
-                            <input type="text" id="time-from-mm" value="00" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="mb-1 uppercase">TO:</div>
-                        <div class="flex items-center justify-center gap-1">
-                            <input type="text" id="time-to-hh" value="23" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs">
-                            <span>:</span>
-                            <input type="text" id="time-to-mm" value="00" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs">
-                        </div>
-                    </div>
+                    <div><div class="mb-1 uppercase">FROM:</div><div class="flex items-center justify-center gap-1"><input type="text" id="time-from-hh" value="17" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs"><span>:</span><input type="text" id="time-from-mm" value="00" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs"></div></div>
+                    <div><div class="mb-1 uppercase">TO:</div><div class="flex items-center justify-center gap-1"><input type="text" id="time-to-hh" value="23" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs"><span>:</span><input type="text" id="time-to-mm" value="00" class="w-10 bg-[#161b22] border border-[#30363d] text-center text-white font-bold p-1 rounded focus:outline-none focus:border-blue-500 text-xs"></div></div>
                 </div>
-                <div class="flex items-center justify-center gap-2 mb-3">
-                    <label class="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase cursor-pointer">
-                        <input type="checkbox" id="time-till-end" onchange="toggleEndCheckbox(this)" class="accent-blue-500">
-                        <span>No fixed end (Till End)</span>
-                    </label>
-                </div>
+                <div class="flex items-center justify-center gap-2 mb-3"><label class="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase cursor-pointer"><input type="checkbox" id="time-till-end" onchange="toggleEndCheckbox(this)" class="accent-blue-500"><span>Till End</span></label></div>
                 <button onclick="saveSpecificTime()" class="w-full py-2 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold rounded text-xs hover:bg-emerald-600/30 transition">SAVE TIMEFRAME</button>
             </div>
-
             <button onclick="selectStatus('-')" class="w-full py-2 bg-[#21262d] text-gray-400 font-bold border border-[#30363d] rounded hover:text-white transition text-[10px]">CLEAR</button>
         </div>
     </div>
 
-    <!-- Event Picker Modal Layer -->
+    <!-- Event Modal -->
     <div id="event-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
         <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[340px] p-5 shadow-2xl">
             <div class="text-white font-bold text-xs uppercase mb-3 tracking-wider">Edit Day Event / Tournament</div>
@@ -119,6 +85,12 @@
     </div>
 
     <script>
+        // CONFIGURATION: REPLACE THESE WITH YOUR COPIED SUPABASE DETAILS
+        const SUPABASE_URL = "https://xwbupodfmgovkrixbetu.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_kVhoY5UQyNm5iCxnDBuuBw_IXHuxmnk";
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         const members = ['Zeniq', 'Skitz', 'Kapa', 'Frag', 'Neo', 'Kayuu', 'Sladak'];
         const scheduleStructure = [
             { name: "6th - 12th of July", days: ["Monday 6th of July", "Tuesday 7th of July", "Wednesday 8th of July", "Thursday 9th of July", "Friday 10th of July", "Saturday 11th of July", "Sunday 12th of July"] },
@@ -128,6 +100,42 @@
 
         let activeTargetCell = null;
         let activeTargetEvent = null;
+        let cloudDataCache = {};
+
+        function initIdentity() {
+            let user = localStorage.getItem('team-user-identity');
+            if (!user) {
+                user = prompt("Enter your Name:");
+                if (!user || user.trim() === "") user = "Guest";
+                localStorage.setItem('team-user-identity', user.trim());
+            }
+            document.getElementById('current-user-display').innerText = user;
+        }
+
+        function changeIdentity() {
+            const newUser = prompt("Enter your Name:");
+            if (newUser && newUser.trim() !== "") {
+                localStorage.setItem('team-user-identity', newUser.trim());
+                document.getElementById('current-user-display').innerText = newUser.trim();
+            }
+        }
+
+        // Fetch everything from Supabase Cloud Database
+        async function syncFromCloud() {
+            const { data, error } = await supabase.from('schedule_data').select('*');
+            if (!error && data) {
+                cloudDataCache = {};
+                data.forEach(row => { cloudDataCache[row.id] = row.value; });
+            }
+            renderSchedule();
+        }
+
+        // Save entry directly to Supabase Cloud Database
+        async function saveToCloud(id, value) {
+            cloudDataCache[id] = value;
+            renderSchedule(); // update UI instantly
+            await supabase.from('schedule_data').upsert({ id: id, value: value });
+        }
 
         function renderSchedule() {
             const container = document.getElementById('schedule-weeks');
@@ -138,8 +146,8 @@
                 
                 week.days.forEach(day => {
                     const eventKey = `event-${day}`;
-                    const savedEvent = localStorage.getItem(eventKey) || '';
-                    const isToday = day.includes("8th of July");
+                    const savedEvent = cloudDataCache[eventKey] || '';
+                    const isToday = day.includes("9th of July");
 
                     weekHTML += `
                         <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
@@ -147,12 +155,12 @@
                                 ${isToday ? '<span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>' : ''}
                                 ${day}
                             </div>
-                            <div onclick="openEventModal('${day}')" class="p-2 border-r border-[#30363d]/50 flex items-center justify-center text-blue-400 font-semibold cursor-pointer hover:bg-blue-500/5 transition truncate" title="Click to edit event">${savedEvent}</div>
+                            <div onclick="openEventModal('${day}')" class="p-2 border-r border-[#30363d]/50 flex items-center justify-center text-blue-400 font-semibold cursor-pointer hover:bg-blue-500/5 transition truncate">${savedEvent}</div>
                     `;
 
                     members.forEach(member => {
                         const cellKey = `${day}-${member}`;
-                        const status = localStorage.getItem(cellKey) || '-';
+                        const status = cloudDataCache[cellKey] || '-';
                         let classStyle = 'status-none';
 
                         if (status === 'Available') classStyle = 'status-available';
@@ -168,7 +176,6 @@
                             </div>
                         `;
                     });
-
                     weekHTML += `</div>`;
                 });
                 container.innerHTML += weekHTML;
@@ -186,20 +193,9 @@
             document.getElementById('status-modal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('status-modal').classList.add('hidden');
-        }
-
-        function selectStatus(status) {
-            localStorage.setItem(activeTargetCell, status);
-            closeModal();
-            renderSchedule();
-        }
-
-        function toggleTimeInputs() {
-            document.getElementById('time-picker-block').classList.toggle('hidden');
-        }
-
+        function closeModal() { document.getElementById('status-modal').classList.add('hidden'); }
+        function selectStatus(status) { saveToCloud(activeTargetCell, status); closeModal(); }
+        function toggleTimeInputs() { document.getElementById('time-picker-block').classList.toggle('hidden'); }
         function toggleEndCheckbox(cb) {
             document.getElementById('time-to-hh').disabled = cb.checked;
             document.getElementById('time-to-mm').disabled = cb.checked;
@@ -209,40 +205,29 @@
             const fromHH = document.getElementById('time-from-hh').value;
             const fromMM = document.getElementById('time-from-mm').value;
             const isTillEnd = document.getElementById('time-till-end').checked;
-            
-            let finalValue = "";
-            if (isTillEnd) {
-                finalValue = `${fromHH}:${fromMM}-END`;
-            } else {
-                const toHH = document.getElementById('time-to-hh').value;
-                const toMM = document.getElementById('time-to-mm').value;
-                finalValue = `${fromHH}:${fromMM}-${toHH}:${toMM}`;
-            }
-
-            localStorage.setItem(activeTargetCell, finalValue);
+            let finalValue = isTillEnd ? `${fromHH}:${fromMM}-END` : `${fromHH}:${fromMM}-${document.getElementById('time-to-hh').value}:${document.getElementById('time-to-mm').value}`;
+            saveToCloud(activeTargetCell, finalValue);
             closeModal();
-            renderSchedule();
         }
 
         function openEventModal(day) {
             activeTargetEvent = `event-${day}`;
-            document.getElementById('event-input').value = localStorage.getItem(activeTargetEvent) || '';
+            document.getElementById('event-input').value = cloudDataCache[activeTargetEvent] || '';
             document.getElementById('event-modal').classList.remove('hidden');
         }
 
-        function closeEventModal() {
-            document.getElementById('event-modal').classList.add('hidden');
-        }
-
+        function closeEventModal() { document.getElementById('event-modal').classList.add('hidden'); }
         function saveEvent() {
             const val = document.getElementById('event-input').value;
-            if (val.trim() === '') localStorage.removeItem(activeTargetEvent);
-            else localStorage.setItem(activeTargetEvent, val);
+            saveToCloud(activeTargetEvent, val.trim() === '' ? '-' : val);
             closeEventModal();
-            renderSchedule();
         }
 
-        renderSchedule();
+        initIdentity();
+        syncFromCloud();
+        
+        // Auto-refresh data every 15 seconds so everyone stays updated live
+        setInterval(syncFromCloud, 15000);
     </script>
 </body>
 </html>
