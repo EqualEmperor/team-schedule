@@ -9,12 +9,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
-        .grid-cols-custom { grid-template-columns: 160px 180px repeat(5, minmax(100px, 1fr)) 120px minmax(100px, 1fr); }
+        .grid-cols-custom { grid-template-columns: 160px 220px repeat(5, minmax(100px, 1fr)) 120px minmax(100px, 1fr); }
         .status-available { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .status-unavailable { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         .status-unsure { background-color: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
         .status-specific { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
         .status-none { background-color: rgba(255, 255, 255, 0.02); color: #444c56; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .event-text { white-space: pre-wrap; word-break: break-word; line-height: 1.4; }
     </style>
 </head>
 <body class="p-4 select-none">
@@ -26,7 +27,7 @@
                 <span id="current-user-display" class="text-gray-400">Loading...</span>
                 <span onclick="changeIdentity()" class="cursor-pointer text-blue-400 hover:underline text-[10px] uppercase ml-1">Change</span>
             </div>
-            <div class="text-gray-400">Today: 2026-07-09</div>
+            <div id="today-display" class="text-gray-400">Today: Loading...</div>
         </div>
     </header>
 
@@ -74,9 +75,9 @@
 
     <!-- Event Modal -->
     <div id="event-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
-        <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[340px] p-5 shadow-2xl">
-            <div class="text-white font-bold text-xs uppercase mb-3 tracking-wider">Edit Day Event / Tournament</div>
-            <input type="text" id="event-input" placeholder="e.g., T4 Tournament (19:00)" class="w-full bg-[#0d1117] border border-[#30363d] p-2.5 rounded text-white text-xs mb-4 focus:outline-none focus:border-blue-500">
+        <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[420px] p-5 shadow-2xl">
+            <div class="text-white font-bold text-xs uppercase mb-3 tracking-wider">Edit Day Event / Details</div>
+            <textarea id="event-input" rows="5" placeholder="e.g., T4 Tournament (19:00)&#10;Second paragraph / additional notes..." class="w-full bg-[#0d1117] border border-[#30363d] p-2.5 rounded text-white text-xs mb-4 focus:outline-none focus:border-blue-500 normal-case resize-y"></textarea>
             <div class="flex gap-2">
                 <button onclick="saveEvent()" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded text-xs transition">SAVE EVENT</button>
                 <button onclick="closeEventModal()" class="px-4 py-2 bg-[#21262d] text-gray-400 border border-[#30363d] rounded text-xs hover:text-white transition">CANCEL</button>
@@ -85,22 +86,88 @@
     </div>
 
     <script>
-        // CONFIGURATION: REPLACE THESE WITH YOUR COPIED SUPABASE DETAILS
+        // CONFIGURATION
         const SUPABASE_URL = "https://xwbupodfmgovkrixbetu.supabase.co";
         const SUPABASE_KEY = "sb_publishable_kVhoY5UQyNm5iCxnDBuuBw_IXHuxmnk";
         
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const members = ['Zeniq', 'Skitz', 'Kapa', 'Frag', 'Neo', 'Kayuu', 'Sladak'];
-        const scheduleStructure = [
-            { name: "6th - 12th of July", days: ["Monday 6th of July", "Tuesday 7th of July", "Wednesday 8th of July", "Thursday 9th of July", "Friday 10th of July", "Saturday 11th of July", "Sunday 12th of July"] },
-            { name: "13th - 19th of July", days: ["Monday 13th of July", "Tuesday 14th of July", "Wednesday 15th of July", "Thursday 16th of July", "Friday 17th of July", "Saturday 18th of July", "Sunday 19th of July"] },
-            { name: "20th - 26th of July", days: ["Monday 20th of July", "Tuesday 21st of July", "Wednesday 22nd of July", "Thursday 23rd of July", "Friday 24th of July", "Saturday 25th of July", "Sunday 26th of July"] }
+        
+        // Full Schedule Structure extending through August 26th
+        const rawScheduleStructure = [
+            { name: "6th - 12th of July", startDate: "2026-07-06", endDate: "2026-07-12", days: [
+                { text: "Monday 6th of July", iso: "2026-07-06" }, { text: "Tuesday 7th of July", iso: "2026-07-07" },
+                { text: "Wednesday 8th of July", iso: "2026-07-08" }, { text: "Thursday 9th of July", iso: "2026-07-09" },
+                { text: "Friday 10th of July", iso: "2026-07-10" }, { text: "Saturday 11th of July", iso: "2026-07-11" },
+                { text: "Sunday 12th of July", iso: "2026-07-12" }
+            ]},
+            { name: "13th - 19th of July", startDate: "2026-07-13", endDate: "2026-07-19", days: [
+                { text: "Monday 13th of July", iso: "2026-07-13" }, { text: "Tuesday 14th of July", iso: "2026-07-14" },
+                { text: "Wednesday 15th of July", iso: "2026-07-15" }, { text: "Thursday 16th of July", iso: "2026-07-16" },
+                { text: "Friday 17th of July", iso: "2026-07-17" }, { text: "Saturday 18th of July", iso: "2026-07-18" },
+                { text: "Sunday 19th of July", iso: "2026-07-19" }
+            ]},
+            { name: "20th - 26th of July", startDate: "2026-07-20", endDate: "2026-07-26", days: [
+                { text: "Monday 20th of July", iso: "2026-07-20" }, { text: "Tuesday 21st of July", iso: "2026-07-21" },
+                { text: "Wednesday 22nd of July", iso: "2026-07-22" }, { text: "Thursday 23rd of July", iso: "2026-07-23" },
+                { text: "Friday 24th of July", iso: "2026-07-24" }, { text: "Saturday 25th of July", iso: "2026-07-25" },
+                { text: "Sunday 26th of July", iso: "2026-07-26" }
+            ]},
+            { name: "27th July - 2nd August", startDate: "2026-07-27", endDate: "2026-08-02", days: [
+                { text: "Monday 27th of July", iso: "2026-07-27" }, { text: "Tuesday 28th of July", iso: "2026-07-28" },
+                { text: "Wednesday 29th of July", iso: "2026-07-29" }, { text: "Thursday 30th of July", iso: "2026-07-30" },
+                { text: "Friday 31st of July", iso: "2026-07-31" }, { text: "Saturday 1st of August", iso: "2026-08-01" },
+                { text: "Sunday 2nd of August", iso: "2026-08-02" }
+            ]},
+            { name: "3rd - 9th of August", startDate: "2026-08-03", endDate: "2026-08-09", days: [
+                { text: "Monday 3rd of August", iso: "2026-08-03" }, { text: "Tuesday 4th of August", iso: "2026-08-04" },
+                { text: "Wednesday 5th of August", iso: "2026-08-05" }, { text: "Thursday 6th of August", iso: "2026-08-06" },
+                { text: "Friday 7th of August", iso: "2026-08-07" }, { text: "Saturday 8th of August", iso: "2026-08-08" },
+                { text: "Sunday 9th of August", iso: "2026-08-09" }
+            ]},
+            { name: "10th - 16th of August", startDate: "2026-08-10", endDate: "2026-08-16", days: [
+                { text: "Monday 10th of August", iso: "2026-08-10" }, { text: "Tuesday 11th of August", iso: "2026-08-11" },
+                { text: "Wednesday 12th of August", iso: "2026-08-12" }, { text: "Thursday 13th of August", iso: "2026-08-13" },
+                { text: "Friday 14th of August", iso: "2026-08-14" }, { text: "Saturday 15th of August", iso: "2026-08-15" },
+                { text: "Sunday 16th of August", iso: "2026-08-16" }
+            ]},
+            { name: "17th - 23rd of August", startDate: "2026-08-17", endDate: "2026-08-23", days: [
+                { text: "Monday 17th of August", iso: "2026-08-17" }, { text: "Tuesday 18th of August", iso: "2026-08-18" },
+                { text: "Wednesday 19th of August", iso: "2026-08-19" }, { text: "Thursday 20th of August", iso: "2026-08-20" },
+                { text: "Friday 21st of August", iso: "2026-08-21" }, { text: "Saturday 22nd of August", iso: "2026-08-22" },
+                { text: "Sunday 23rd of August", iso: "2026-08-23" }
+            ]},
+            { name: "24th - 26th of August", startDate: "2026-08-24", endDate: "2026-08-26", days: [
+                { text: "Monday 24th of August", iso: "2026-08-24" }, { text: "Tuesday 25th of August", iso: "2026-08-25" },
+                { text: "Wednesday 26th of August", iso: "2026-08-26" }
+            ]}
         ];
 
         let activeTargetCell = null;
         let activeTargetEvent = null;
         let cloudDataCache = {};
+
+        function getTodayISO() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function getStartOfCurrentWeekISO() {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 is Sun, 1 is Mon...
+            const distanceToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            const monday = new Date(today);
+            monday.setDate(today.getDate() + distanceToMon);
+            
+            const year = monday.getFullYear();
+            const month = String(monday.getMonth() + 1).padStart(2, '0');
+            const day = String(monday.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
         function initIdentity() {
             let user = localStorage.getItem('team-user-identity');
@@ -110,6 +177,7 @@
                 localStorage.setItem('team-user-identity', user.trim());
             }
             document.getElementById('current-user-display').innerText = user;
+            document.getElementById('today-display').innerText = `Today: ${getTodayISO()}`;
         }
 
         function changeIdentity() {
@@ -120,7 +188,6 @@
             }
         }
 
-// Fetch everything from Supabase Cloud Database
         async function syncFromCloud() {
             const { data, error } = await db.from('schedule_data').select('*');
             if (!error && data) {
@@ -130,10 +197,9 @@
             renderSchedule();
         }
 
-        // Save entry directly to Supabase Cloud Database
         async function saveToCloud(id, value) {
             cloudDataCache[id] = value;
-            renderSchedule(); // update UI instantly
+            renderSchedule();
             await db.from('schedule_data').upsert({ id: id, value: value });
         }
 
@@ -141,25 +207,31 @@
             const container = document.getElementById('schedule-weeks');
             container.innerHTML = '';
 
-            scheduleStructure.forEach(week => {
+            const todayISO = getTodayISO();
+            const startOfWeekISO = getStartOfCurrentWeekISO();
+
+            // Filter out past weeks automatically
+            const activeWeeks = rawScheduleStructure.filter(week => week.endDate >= startOfWeekISO);
+
+            activeWeeks.forEach(week => {
                 let weekHTML = `<div class="bg-[#0d1117] text-left p-2 px-4 border-b border-[#30363d] text-gray-500 font-bold text-[10px]">${week.name}</div>`;
                 
-                week.days.forEach(day => {
-                    const eventKey = `event-${day}`;
+                week.days.forEach(dayObj => {
+                    const eventKey = `event-${dayObj.text}`;
                     const savedEvent = cloudDataCache[eventKey] || '';
-                    const isToday = day.includes("9th of July");
+                    const isToday = (dayObj.iso === todayISO);
 
                     weekHTML += `
                         <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
                             <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start gap-2 ${isToday ? 'bg-[#1c212a] text-white font-semibold' : 'text-gray-400'} pl-4">
-                                ${isToday ? '<span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>' : ''}
-                                ${day}
+                                ${isToday ? '<span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_#3b82f6]"></span>' : ''}
+                                ${dayObj.text}
                             </div>
-                            <div onclick="openEventModal('${day}')" class="p-2 border-r border-[#30363d]/50 flex items-center justify-center text-blue-400 font-semibold cursor-pointer hover:bg-blue-500/5 transition truncate">${savedEvent}</div>
+                            <div onclick="openEventModal('${dayObj.text}')" class="p-2 border-r border-[#30363d]/50 flex items-center justify-center text-blue-400 font-semibold cursor-pointer hover:bg-blue-500/5 transition text-left text-[10px] normal-case event-text">${savedEvent}</div>
                     `;
 
                     members.forEach(member => {
-                        const cellKey = `${day}-${member}`;
+                        const cellKey = `${dayObj.text}-${member}`;
                         const status = cloudDataCache[cellKey] || '-';
                         let classStyle = 'status-none';
 
@@ -170,7 +242,7 @@
 
                         weekHTML += `
                             <div class="p-1.5 border-r border-[#30363d]/30 flex items-center justify-center">
-                                <div onclick="openModal('${member}', '${day}')" class="w-full h-full flex items-center justify-center rounded cursor-pointer transition transform active:scale-95 ${classStyle}">
+                                <div onclick="openModal('${member}', '${dayObj.text}')" class="w-full h-full flex items-center justify-center rounded cursor-pointer transition transform active:scale-95 ${classStyle}">
                                     ${status}
                                 </div>
                             </div>
@@ -226,7 +298,7 @@
         initIdentity();
         syncFromCloud();
         
-        // Auto-refresh data every 15 seconds so everyone stays updated live
+        // Refresh data every 15 seconds
         setInterval(syncFromCloud, 15000);
     </script>
 </body>
