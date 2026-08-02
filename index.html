@@ -54,7 +54,16 @@
         <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[380px] p-5 shadow-2xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition text-lg">&times;</button>
             <div id="modal-header-name" class="text-center font-bold text-white text-sm tracking-widest uppercase mb-0.5">PLAYER</div>
-            <div id="modal-header-date" class="text-center text-gray-500 text-[10px] tracking-wider mb-5">Date</div>
+            <div id="modal-header-date" class="text-center text-gray-500 text-[10px] tracking-wider mb-3">Date</div>
+            
+            <!-- Repeat Toggle Checkbox -->
+            <div class="flex items-center justify-center gap-2 bg-[#0d1117] border border-[#30363d] p-2 rounded mb-4">
+                <label class="flex items-center gap-2 text-[10px] text-gray-300 font-bold uppercase cursor-pointer">
+                    <input type="checkbox" id="repeat-weekly" class="accent-blue-500">
+                    <span id="repeat-label-text">Repeat every week</span>
+                </label>
+            </div>
+
             <div class="flex flex-col gap-2.5 mb-4">
                 <button onclick="selectStatus('Available')" class="w-full py-2.5 rounded font-bold tracking-wider border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition">AVAILABLE</button>
                 <button onclick="selectStatus('Unavailable')" class="w-full py-2.5 rounded font-bold tracking-wider border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition">UNAVAILABLE</button>
@@ -145,6 +154,8 @@
         ];
 
         let activeTargetCell = null;
+        let activeMember = null;
+        let activeDayText = null;
         let activeTargetEvent = null;
         let cloudDataCache = {};
 
@@ -197,10 +208,14 @@
             renderSchedule();
         }
 
-        async function saveToCloud(id, value) {
-            cloudDataCache[id] = value;
+        async function saveToCloudBatch(updates) {
+            const upsertArray = [];
+            for (const [id, value] of Object.entries(updates)) {
+                cloudDataCache[id] = value;
+                upsertArray.push({ id: id, value: value });
+            }
             renderSchedule();
-            await db.from('schedule_data').upsert({ id: id, value: value });
+            await db.from('schedule_data').upsert(upsertArray);
         }
 
         function renderSchedule() {
@@ -256,8 +271,16 @@
 
         function openModal(member, day) {
             activeTargetCell = `${day}-${member}`;
+            activeMember = member;
+            activeDayText = day;
+            
+            // Extract day name (e.g., "Monday" from "Monday 6th of July")
+            const dayName = day.split(' ')[0];
+
             document.getElementById('modal-header-name').innerText = member;
             document.getElementById('modal-header-date').innerText = day;
+            document.getElementById('repeat-label-text').innerText = `Repeat every ${dayName}`;
+            document.getElementById('repeat-weekly').checked = false;
             document.getElementById('time-picker-block').classList.add('hidden');
             document.getElementById('time-till-end').checked = false;
             document.getElementById('time-to-hh').disabled = false;
@@ -266,7 +289,33 @@
         }
 
         function closeModal() { document.getElementById('status-modal').classList.add('hidden'); }
-        function selectStatus(status) { saveToCloud(activeTargetCell, status); closeModal(); }
+        
+        function applyStatusWithRepeat(status) {
+            const isRepeat = document.getElementById('repeat-weekly').checked;
+            const updates = {};
+
+            if (isRepeat && activeDayText && activeMember) {
+                // Get the day prefix, e.g. "Monday"
+                const targetDayPrefix = activeDayText.split(' ')[0];
+                
+                // Find all matching days in the schedule structure
+                rawScheduleStructure.forEach(week => {
+                    week.days.forEach(d => {
+                        if (d.text.startsWith(targetDayPrefix)) {
+                            const key = `${d.text}-${activeMember}`;
+                            updates[key] = status;
+                        }
+                    });
+                });
+            } else {
+                updates[activeTargetCell] = status;
+            }
+
+            saveToCloudBatch(updates);
+            closeModal();
+        }
+
+        function selectStatus(status) { applyStatusWithRepeat(status); }
         function toggleTimeInputs() { document.getElementById('time-picker-block').classList.toggle('hidden'); }
         function toggleEndCheckbox(cb) {
             document.getElementById('time-to-hh').disabled = cb.checked;
@@ -278,8 +327,7 @@
             const fromMM = document.getElementById('time-from-mm').value;
             const isTillEnd = document.getElementById('time-till-end').checked;
             let finalValue = isTillEnd ? `${fromHH}:${fromMM}-END` : `${fromHH}:${fromMM}-${document.getElementById('time-to-hh').value}:${document.getElementById('time-to-mm').value}`;
-            saveToCloud(activeTargetCell, finalValue);
-            closeModal();
+            applyStatusWithRepeat(finalValue);
         }
 
         function openEventModal(day) {
@@ -291,7 +339,9 @@
         function closeEventModal() { document.getElementById('event-modal').classList.add('hidden'); }
         function saveEvent() {
             const val = document.getElementById('event-input').value;
-            saveToCloud(activeTargetEvent, val.trim() === '' ? '-' : val);
+            const updates = {};
+            updates[activeTargetEvent] = val.trim() === '' ? '-' : val;
+            saveToCloudBatch(updates);
             closeEventModal();
         }
 
