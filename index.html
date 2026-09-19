@@ -9,7 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
-        .grid-cols-custom { grid-template-columns: 160px 220px repeat(5, minmax(100px, 1fr)) 120px minmax(100px, 1fr); }
+        /* Adjusted grid columns for: Date (160px), Event (220px), 5 Players (1fr each) */
+        .grid-cols-custom { grid-template-columns: 160px 220px repeat(5, minmax(100px, 1fr)); }
         .status-available { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .status-unavailable { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         .status-unsure { background-color: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
@@ -38,13 +39,11 @@
                 <span>Date</span>
             </div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center">Event</div>
-            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Zeniq</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Skitz</div>
-            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Kapa</div>
-            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Ren</div>
-            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Neo</div>
-            <div class="p-3 border-r border-[#30363d] flex flex-col justify-center"><span class="text-[9px] text-gray-500 font-normal">Coach</span><span class="text-gray-300">Kayuu</span></div>
-            <div class="p-3 flex flex-col justify-center"><span class="text-[9px] text-gray-500 font-normal">Substitute</span><span class="text-gray-300">?</span></div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Kayuu</div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Mkk</div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Migl</div>
+            <div class="p-3 flex items-center justify-center text-gray-300">Bondi</div>
         </div>
         <div id="schedule-weeks"></div>
     </main>
@@ -54,16 +53,7 @@
         <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-[380px] p-5 shadow-2xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition text-lg">&times;</button>
             <div id="modal-header-name" class="text-center font-bold text-white text-sm tracking-widest uppercase mb-0.5">PLAYER</div>
-            <div id="modal-header-date" class="text-center text-gray-500 text-[10px] tracking-wider mb-3">Date</div>
-            
-            <!-- Repeat Toggle Checkbox -->
-            <div class="flex items-center justify-center gap-2 bg-[#0d1117] border border-[#30363d] p-2 rounded mb-4">
-                <label class="flex items-center gap-2 text-[10px] text-gray-300 font-bold uppercase cursor-pointer">
-                    <input type="checkbox" id="repeat-weekly" class="accent-blue-500">
-                    <span id="repeat-label-text">Repeat every week</span>
-                </label>
-            </div>
-
+            <div id="modal-header-date" class="text-center text-gray-500 text-[10px] tracking-wider mb-5">Date</div>
             <div class="flex flex-col gap-2.5 mb-4">
                 <button onclick="selectStatus('Available')" class="w-full py-2.5 rounded font-bold tracking-wider border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition">AVAILABLE</button>
                 <button onclick="selectStatus('Unavailable')" class="w-full py-2.5 rounded font-bold tracking-wider border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition">UNAVAILABLE</button>
@@ -101,61 +91,59 @@
         
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const members = ['Zeniq', 'Skitz', 'Kapa', 'Ren', 'Neo', 'Kayuu', '?'];
-        
-        // Full Schedule Structure extending through August 26th
-        const rawScheduleStructure = [
-            { name: "6th - 12th of July", startDate: "2026-07-06", endDate: "2026-07-12", days: [
-                { text: "Monday 6th of July", iso: "2026-07-06" }, { text: "Tuesday 7th of July", iso: "2026-07-07" },
-                { text: "Wednesday 8th of July", iso: "2026-07-08" }, { text: "Thursday 9th of July", iso: "2026-07-09" },
-                { text: "Friday 10th of July", iso: "2026-07-10" }, { text: "Saturday 11th of July", iso: "2026-07-11" },
-                { text: "Sunday 12th of July", iso: "2026-07-12" }
-            ]},
-            { name: "13th - 19th of July", startDate: "2026-07-13", endDate: "2026-07-19", days: [
-                { text: "Monday 13th of July", iso: "2026-07-13" }, { text: "Tuesday 14th of July", iso: "2026-07-14" },
-                { text: "Wednesday 15th of July", iso: "2026-07-15" }, { text: "Thursday 16th of July", iso: "2026-07-16" },
-                { text: "Friday 17th of July", iso: "2026-07-17" }, { text: "Saturday 18th of July", iso: "2026-07-18" },
-                { text: "Sunday 19th of July", iso: "2026-07-19" }
-            ]},
-            { name: "20th - 26th of July", startDate: "2026-07-20", endDate: "2026-07-26", days: [
-                { text: "Monday 20th of July", iso: "2026-07-20" }, { text: "Tuesday 21st of July", iso: "2026-07-21" },
-                { text: "Wednesday 22nd of July", iso: "2026-07-22" }, { text: "Thursday 23rd of July", iso: "2026-07-23" },
-                { text: "Friday 24th of July", iso: "2026-07-24" }, { text: "Saturday 25th of July", iso: "2026-07-25" },
-                { text: "Sunday 26th of July", iso: "2026-07-26" }
-            ]},
-            { name: "27th July - 2nd August", startDate: "2026-07-27", endDate: "2026-08-02", days: [
-                { text: "Monday 27th of July", iso: "2026-07-27" }, { text: "Tuesday 28th of July", iso: "2026-07-28" },
-                { text: "Wednesday 29th of July", iso: "2026-07-29" }, { text: "Thursday 30th of July", iso: "2026-07-30" },
-                { text: "Friday 31st of July", iso: "2026-07-31" }, { text: "Saturday 1st of August", iso: "2026-08-01" },
-                { text: "Sunday 2nd of August", iso: "2026-08-02" }
-            ]},
-            { name: "3rd - 9th of August", startDate: "2026-08-03", endDate: "2026-08-09", days: [
-                { text: "Monday 3rd of August", iso: "2026-08-03" }, { text: "Tuesday 4th of August", iso: "2026-08-04" },
-                { text: "Wednesday 5th of August", iso: "2026-08-05" }, { text: "Thursday 6th of August", iso: "2026-08-06" },
-                { text: "Friday 7th of August", iso: "2026-08-07" }, { text: "Saturday 8th of August", iso: "2026-08-08" },
-                { text: "Sunday 9th of August", iso: "2026-08-09" }
-            ]},
-            { name: "10th - 16th of August", startDate: "2026-08-10", endDate: "2026-08-16", days: [
-                { text: "Monday 10th of August", iso: "2026-08-10" }, { text: "Tuesday 11th of August", iso: "2026-08-11" },
-                { text: "Wednesday 12th of August", iso: "2026-08-12" }, { text: "Thursday 13th of August", iso: "2026-08-13" },
-                { text: "Friday 14th of August", iso: "2026-08-14" }, { text: "Saturday 15th of August", iso: "2026-08-15" },
-                { text: "Sunday 16th of August", iso: "2026-08-16" }
-            ]},
-            { name: "17th - 23rd of August", startDate: "2026-08-17", endDate: "2026-08-23", days: [
-                { text: "Monday 17th of August", iso: "2026-08-17" }, { text: "Tuesday 18th of August", iso: "2026-08-18" },
-                { text: "Wednesday 19th of August", iso: "2026-08-19" }, { text: "Thursday 20th of August", iso: "2026-08-20" },
-                { text: "Friday 21st of August", iso: "2026-08-21" }, { text: "Saturday 22nd of August", iso: "2026-08-22" },
-                { text: "Sunday 23rd of August", iso: "2026-08-23" }
-            ]},
-            { name: "24th - 26th of August", startDate: "2026-08-24", endDate: "2026-08-26", days: [
-                { text: "Monday 24th of August", iso: "2026-08-24" }, { text: "Tuesday 25th of August", iso: "2026-08-25" },
-                { text: "Wednesday 26th of August", iso: "2026-08-26" }
-            ]}
-        ];
+        // Updated Active Roster
+        const members = ['Skitz', 'Kayuu', 'Mkk', 'Migl', 'Bondi'];
+
+        // Dynamically generate weeks starting from today through 8 weeks (~2 months)
+        function generateTwoMonthSchedule() {
+            const weeks = [];
+            const today = new Date();
+            
+            // Get Monday of current week
+            const dayOfWeek = today.getDay();
+            const distToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            let currentMon = new Date(today);
+            currentMon.setDate(today.getDate() + distToMon);
+
+            for (let w = 0; w < 8; w++) {
+                const days = [];
+                const weekStart = new Date(currentMon);
+                const weekEnd = new Date(currentMon);
+                weekEnd.setDate(weekStart.getDate() + 6);
+
+                for (let d = 0; d < 7; d++) {
+                    const dayDate = new Date(weekStart);
+                    dayDate.setDate(weekStart.getDate() + d);
+
+                    const iso = dayDate.toISOString().split('T')[0];
+                    const dayName = dayDate.toLocaleDateString('en-US', { weekday: 'long' });
+                    const monthName = dayDate.toLocaleDateString('en-US', { month: 'long' });
+                    const dateNum = dayDate.getDate();
+
+                    days.push({
+                        text: `${dayName} ${dateNum} of ${monthName}`,
+                        iso: iso
+                    });
+                }
+
+                const weekTitle = `${weekStart.getDate()} - ${weekEnd.getDate()} of ${weekEnd.toLocaleDateString('en-US', { month: 'long' })}`;
+
+                weeks.push({
+                    name: weekTitle,
+                    startDate: weekStart.toISOString().split('T')[0],
+                    endDate: weekEnd.toISOString().split('T')[0],
+                    days: days
+                });
+
+                // Advance to next Monday
+                currentMon.setDate(currentMon.getDate() + 7);
+            }
+            return weeks;
+        }
+
+        const rawScheduleStructure = generateTwoMonthSchedule();
 
         let activeTargetCell = null;
-        let activeMember = null;
-        let activeDayText = null;
         let activeTargetEvent = null;
         let cloudDataCache = {};
 
@@ -164,19 +152,6 @@
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function getStartOfCurrentWeekISO() {
-            const today = new Date();
-            const dayOfWeek = today.getDay(); // 0 is Sun, 1 is Mon...
-            const distanceToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-            const monday = new Date(today);
-            monday.setDate(today.getDate() + distanceToMon);
-            
-            const year = monday.getFullYear();
-            const month = String(monday.getMonth() + 1).padStart(2, '0');
-            const day = String(monday.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         }
 
@@ -208,14 +183,10 @@
             renderSchedule();
         }
 
-        async function saveToCloudBatch(updates) {
-            const upsertArray = [];
-            for (const [id, value] of Object.entries(updates)) {
-                cloudDataCache[id] = value;
-                upsertArray.push({ id: id, value: value });
-            }
+        async function saveToCloud(id, value) {
+            cloudDataCache[id] = value;
             renderSchedule();
-            await db.from('schedule_data').upsert(upsertArray);
+            await db.from('schedule_data').upsert({ id: id, value: value });
         }
 
         function renderSchedule() {
@@ -223,12 +194,8 @@
             container.innerHTML = '';
 
             const todayISO = getTodayISO();
-            const startOfWeekISO = getStartOfCurrentWeekISO();
 
-            // Filter out past weeks automatically
-            const activeWeeks = rawScheduleStructure.filter(week => week.endDate >= startOfWeekISO);
-
-            activeWeeks.forEach(week => {
+            rawScheduleStructure.forEach(week => {
                 let weekHTML = `<div class="bg-[#0d1117] text-left p-2 px-4 border-b border-[#30363d] text-gray-500 font-bold text-[10px]">${week.name}</div>`;
                 
                 week.days.forEach(dayObj => {
@@ -271,16 +238,8 @@
 
         function openModal(member, day) {
             activeTargetCell = `${day}-${member}`;
-            activeMember = member;
-            activeDayText = day;
-            
-            // Extract day name (e.g., "Monday" from "Monday 6th of July")
-            const dayName = day.split(' ')[0];
-
             document.getElementById('modal-header-name').innerText = member;
             document.getElementById('modal-header-date').innerText = day;
-            document.getElementById('repeat-label-text').innerText = `Repeat every ${dayName}`;
-            document.getElementById('repeat-weekly').checked = false;
             document.getElementById('time-picker-block').classList.add('hidden');
             document.getElementById('time-till-end').checked = false;
             document.getElementById('time-to-hh').disabled = false;
@@ -289,33 +248,7 @@
         }
 
         function closeModal() { document.getElementById('status-modal').classList.add('hidden'); }
-        
-        function applyStatusWithRepeat(status) {
-            const isRepeat = document.getElementById('repeat-weekly').checked;
-            const updates = {};
-
-            if (isRepeat && activeDayText && activeMember) {
-                // Get the day prefix, e.g. "Monday"
-                const targetDayPrefix = activeDayText.split(' ')[0];
-                
-                // Find all matching days in the schedule structure
-                rawScheduleStructure.forEach(week => {
-                    week.days.forEach(d => {
-                        if (d.text.startsWith(targetDayPrefix)) {
-                            const key = `${d.text}-${activeMember}`;
-                            updates[key] = status;
-                        }
-                    });
-                });
-            } else {
-                updates[activeTargetCell] = status;
-            }
-
-            saveToCloudBatch(updates);
-            closeModal();
-        }
-
-        function selectStatus(status) { applyStatusWithRepeat(status); }
+        function selectStatus(status) { saveToCloud(activeTargetCell, status); closeModal(); }
         function toggleTimeInputs() { document.getElementById('time-picker-block').classList.toggle('hidden'); }
         function toggleEndCheckbox(cb) {
             document.getElementById('time-to-hh').disabled = cb.checked;
@@ -327,7 +260,8 @@
             const fromMM = document.getElementById('time-from-mm').value;
             const isTillEnd = document.getElementById('time-till-end').checked;
             let finalValue = isTillEnd ? `${fromHH}:${fromMM}-END` : `${fromHH}:${fromMM}-${document.getElementById('time-to-hh').value}:${document.getElementById('time-to-mm').value}`;
-            applyStatusWithRepeat(finalValue);
+            saveToCloud(activeTargetCell, finalValue);
+            closeModal();
         }
 
         function openEventModal(day) {
@@ -339,9 +273,7 @@
         function closeEventModal() { document.getElementById('event-modal').classList.add('hidden'); }
         function saveEvent() {
             const val = document.getElementById('event-input').value;
-            const updates = {};
-            updates[activeTargetEvent] = val.trim() === '' ? '-' : val;
-            saveToCloudBatch(updates);
+            saveToCloud(activeTargetEvent, val.trim() === '' ? '-' : val);
             closeEventModal();
         }
 
