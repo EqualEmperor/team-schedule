@@ -1,3 +1,6 @@
+Here is your updated complete HTML code with **Kaye (G)**, **Vesp**, and **Pry** added to the roster, and the grid columns automatically adjusted to fit all 7 players cleanly:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,8 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
-        /* Adjusted grid columns for: Date (160px), Event (220px), 5 Players (1fr each) */
-        .grid-cols-custom { grid-template-columns: 160px 220px repeat(5, minmax(100px, 1fr)); }
+        /* Adjusted grid columns for: Date (160px), Event (220px), 7 Players (1fr each) */
+        .grid-cols-custom { grid-template-columns: 160px 220px repeat(7, minmax(100px, 1fr)); }
         .status-available { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .status-unavailable { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         .status-unsure { background-color: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
@@ -32,8 +35,8 @@
         </div>
     </header>
 
-    <main class="w-full bg-[#161b22] border border-[#30363d] rounded overflow-hidden shadow-xl text-[11px] font-medium uppercase tracking-wider text-center">
-        <div class="grid grid-cols-custom border-b border-[#30363d] bg-[#1f242c] text-gray-400 font-bold">
+    <main class="w-full bg-[#161b22] border border-[#30363d] rounded overflow-x-auto shadow-xl text-[11px] font-medium uppercase tracking-wider text-center">
+        <div class="grid grid-cols-custom border-b border-[#30363d] bg-[#1f242c] text-gray-400 font-bold min-w-[1100px]">
             <div class="p-3 border-r border-[#30363d] flex flex-col justify-center items-center text-gray-300">
                 <span class="text-[9px] text-gray-500 font-normal normal-case mb-1">TIMES ARE IN: CEST</span>
                 <span>Date</span>
@@ -43,9 +46,11 @@
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Kayuu</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Mkk</div>
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Migl</div>
-            <div class="p-3 flex items-center justify-center text-gray-300">Bondi</div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Kaye (G)</div>
+            <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Vesp</div>
+            <div class="p-3 flex items-center justify-center text-gray-300">Pry</div>
         </div>
-        <div id="schedule-weeks"></div>
+        <div id="schedule-weeks" class="min-w-[1100px]"></div>
     </main>
 
     <!-- Status Modal -->
@@ -92,7 +97,7 @@
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Updated Active Roster
-        const members = ['Skitz', 'Kayuu', 'Mkk', 'Migl', 'Bondi'];
+        const members = ['Skitz', 'Kayuu', 'Mkk', 'Migl', 'Kaye (G)', 'Vesp', 'Pry'];
 
         // Dynamically generate weeks starting from today through 8 weeks (~2 months)
         function generateTwoMonthSchedule() {
@@ -186,7 +191,10 @@
         async function saveToCloud(id, value) {
             cloudDataCache[id] = value;
             renderSchedule();
-            await db.from('schedule_data').upsert({ id: id, value: value });
+            const { error } = await db.from('schedule_data').upsert({ id: id, value: value });
+            if (error) {
+                console.error("Supabase error:", error);
+            }
         }
 
         function renderSchedule() {
@@ -285,3 +293,5 @@
     </script>
 </body>
 </html>
+
+```
