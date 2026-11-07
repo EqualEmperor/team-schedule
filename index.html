@@ -9,8 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
-        /* Adjusted grid columns for: Date (160px), Event (220px), 5 Players (1fr each) */
-        .grid-cols-custom { grid-template-columns: 160px 220px repeat(5, minmax(100px, 1fr)); }
+        .grid-cols-custom { grid-template-columns: 160px 220px repeat(5, minmax(120px, 1fr)); }
         .status-available { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .status-unavailable { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         .status-unsure { background-color: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
@@ -33,7 +32,7 @@
     </header>
 
     <main class="w-full bg-[#161b22] border border-[#30363d] rounded overflow-x-auto shadow-xl text-[11px] font-medium uppercase tracking-wider text-center">
-        <div class="grid grid-cols-custom border-b border-[#30363d] bg-[#1f242c] text-gray-400 font-bold min-w-[950px]">
+        <div class="grid grid-cols-custom border-b border-[#30363d] bg-[#1f242c] text-gray-400 font-bold min-w-[980px]">
             <div class="p-3 border-r border-[#30363d] flex flex-col justify-center items-center text-gray-300">
                 <span class="text-[9px] text-gray-500 font-normal normal-case mb-1">TIMES ARE IN: CET</span>
                 <span>Date</span>
@@ -45,7 +44,7 @@
             <div class="p-3 border-r border-[#30363d] flex items-center justify-center text-gray-300">Mibz</div>
             <div class="p-3 flex items-center justify-center text-gray-300">Silva</div>
         </div>
-        <div id="schedule-weeks" class="min-w-[950px]"></div>
+        <div id="schedule-weeks" class="min-w-[980px]"></div>
     </main>
 
     <!-- Status Modal -->
@@ -207,7 +206,7 @@
                     const isToday = (dayObj.iso === todayISO);
 
                     weekHTML += `
-                        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px]">
+                        <div class="grid grid-cols-custom border-b border-[#30363d]/50 hover:bg-[#1c212a] transition duration-150 items-stretch min-h-[42px] min-w-[980px]">
                             <div class="p-2 border-r border-[#30363d]/50 flex items-center justify-start gap-2 ${isToday ? 'bg-[#1c212a] text-white font-semibold' : 'text-gray-400'} pl-4">
                                 ${isToday ? '<span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_#3b82f6]"></span>' : ''}
                                 ${dayObj.text}
